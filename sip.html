@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fydaa SIP Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --light-bg: #f6fdff;
+      --light-header: #1b4965;
+      --light-card: #ffffff;
+      --light-primary: #00b4d8;
+      --light-secondary: #ade8f4;
+      --light-text: #000000;
+      --light-text-secondary: #666666;
+      --light-border: #e5e7eb;
+
+      --dark-bg: #1e1e2f;
+      --dark-header: #0f172a;
+      --dark-card: #2a2a3e;
+      --dark-primary: #00b4d8;
+      --dark-secondary: #3a506b;
+      --dark-text: #ffffff;
+      --dark-text-secondary: #cccccc;
+      --dark-border: #4a4a5e;
+    }
+
+    body.light-mode {
+      --bg: var(--light-bg);
+      --header: var(--light-header);
+      --card: var(--light-card);
+      --primary: var(--light-primary);
+      --secondary: var(--light-secondary);
+      --text: var(--light-text);
+      --text-secondary: var(--light-text-secondary);
+      --border: var(--light-border);
+    }
+
+    body.dark-mode {
+      --bg: var(--dark-bg);
+      --header: var(--dark-header);
+      --card: var(--dark-card);
+      --primary: var(--dark-primary);
+      --secondary: var(--dark-secondary);
+      --text: var(--dark-text);
+      --text-secondary: var(--dark-text-secondary);
+      --border: var(--dark-border);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--bg) 50%, var(--card) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      transition: all 0.3s ease;
+    }
+
+    .header {
+      background: var(--header);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 50%;
+      transition: background 0.3s;
+    }
+
+    .theme-toggle:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .back-button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .back-button:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 2rem;
+      min-height: calc(100vh - 80px);
+    }
+
+    .input-section {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border: 1px solid var(--border);
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+    }
+
+    .results-section {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group label {
+      display: block;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      background: var(--card);
+      color: var(--text);
+      transition: all 0.3s;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+    }
+
+    .currency-symbol {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .percentage-symbol {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .input-with-symbol {
+      padding-left: 2.5rem;
+    }
+
+    .input-with-percentage {
+      padding-right: 2.5rem;
+    }
+
+    .input-hint {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .stepup-preview {
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      color: white;
+      padding: 1rem;
+      border-radius: 12px;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .results-card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border: 1px solid var(--border);
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .result-item {
+      background: linear-gradient(135deg, var(--card), var(--secondary));
+      padding: 1.5rem;
+      border-radius: 15px;
+      text-align: center;
+      border: 1px solid var(--border);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .result-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .result-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .result-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .result-description {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+
+    .chart-container {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .chart-wrapper {
+      position: relative;
+      height: 400px;
+      margin: 2rem 0;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+    }
+
+    .chart-legend {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+    }
+
+    .yearly-breakdown {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border: 1px solid var(--border);
+    }
+
+    .breakdown-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .breakdown-table th,
+    .breakdown-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .breakdown-table th {
+      background: var(--secondary);
+      color: var(--text);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+
+    .breakdown-table tr:hover {
+      background: var(--secondary);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1rem;
+      }
+
+      .header {
+        padding: 1rem;
+      }
+
+      .header h1 {
+        font-size: 1.4rem;
+      }
+
+      .header-controls {
+        gap: 0.5rem;
+      }
+
+      .back-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .input-section {
+        position: static;
+      }
+
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .chart-wrapper {
+        height: 300px;
+      }
+
+      .breakdown-table {
+        font-size: 0.85rem;
+      }
+
+      .breakdown-table th,
+      .breakdown-table td {
+        padding: 0.5rem;
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
+  </style>
+</head>
+<body class="light-mode">
+  <div class="header">
+    <h1>🧮 Fydaa SIP Calculator</h1>
+    <div class="header-controls">
+      <a href="/" class="back-button">🏠 Back to Chat</a>
+      <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="input-section">
+      <div class="section-title">
+        📊 Investment Details
+      </div>
+
+      <div class="input-group">
+        <label for="monthlyAmount">Monthly Investment Amount</label>
+        <div class="input-wrapper">
+          <span class="currency-symbol"></span>
+          <input type="number" id="monthlyAmount" class="input-with-symbol" value="5000" min="100" oninput="calculateSIP()">
+        </div>
+        <div class="input-hint">
+          <span>Min: ₹100</span>
+          <span>Recommended: ₹5,000 - ₹25,000</span>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="investmentPeriod">Investment Period (Years)</label>
+        <input type="number" id="investmentPeriod" value="10" min="1" max="50" oninput="calculateSIP()">
+        <div class="input-hint">
+          <span>Min: 1 year</span>
+          <span>Long-term recommended: 10+ years</span>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="expectedReturn">Expected Annual Return (%)</label>
+        <div class="input-wrapper">
+          <input type="number" id="expectedReturn" class="input-with-percentage" value="12" min="1" max="30" step="0.1" oninput="calculateSIP()">
+          <span class="percentage-symbol">%</span>
+        </div>
+        <div class="input-hint">
+          <span>Conservative: 8-10%</span>
+          <span>Aggressive: 12-15%</span>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="stepUpPercentage">Annual Step-up (%)</label>
+        <div class="input-wrapper">
+          <input type="number" id="stepUpPercentage" class="input-with-percentage" value="0" min="0" max="100" step="0.1" oninput="calculateSIP()">
+          <span class="percentage-symbol">%</span>
+        </div>
+        <div class="input-hint">
+          <span>0% = No step-up</span>
+          <span>Recommended: 5-15%</span>
+        </div>
+        <div id="stepupPreview" class="stepup-preview" style="display: none;"></div>
+      </div>
+    </div>
+
+    <div class="results-section">
+      <div class="results-card fade-in">
+        <div class="section-title">
+          💰 Investment Summary
+        </div>
+        <div class="results-grid" id="resultsGrid">
+          <div class="result-item">
+            <div class="result-icon">💵</div>
+            <div class="result-label">Total Investment</div>
+            <div class="result-value" id="totalInvested">₹0</div>
+            <div class="result-description">Amount you will invest</div>
+          </div>
+          <div class="result-item">
+            <div class="result-icon">📈</div>
+            <div class="result-label">Total Returns</div>
+            <div class="result-value" id="totalReturns">₹0</div>
+            <div class="result-description" id="gainPercentage">0% gain</div>
+          </div>
+          <div class="result-item">
+            <div class="result-icon">🎯</div>
+            <div class="result-label">Final Amount</div>
+            <div class="result-value" id="finalAmount">₹0</div>
+            <div class="result-description">Total corpus value</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-container fade-in">
+        <div class="section-title">
+          📊 Growth Projection
+        </div>
+        <div class="chart-wrapper">
+          <svg class="chart-svg" id="chartSvg" viewBox="0 0 800 400">
+            <defs>
+              <linearGradient id="investedGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#00b4d8" stop-opacity="0.3" />
+                <stop offset="100%" stop-color="#00b4d8" stop-opacity="0.1" />
+              </linearGradient>
+              <linearGradient id="valueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#10b981" stop-opacity="0.3" />
+                <stop offset="100%" stop-color="#10b981" stop-opacity="0.1" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item">
+            <div class="legend-color" style="background: #00b4d8;"></div>
+            <span>Total Invested</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background: #10b981;"></div>
+            <span>Portfolio Value</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="yearly-breakdown fade-in">
+        <div class="section-title">
+          📋 Year-wise Breakdown
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="breakdown-table">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Monthly SIP</th>
+                <th>Total Invested</th>
+                <th>Portfolio Value</th>
+                <th>Returns</th>
+              </tr>
+            </thead>
+            <tbody id="breakdownTableBody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let sipData = {
+      totalInvested: 0,
+      totalReturns: 0,
+      finalAmount: 0,
+      yearlyData: []
+    };
+
+    function toggleTheme() {
+      const body = document.body;
+      body.classList.toggle("dark-mode");
+      body.classList.toggle("light-mode");
+      document.querySelector(".theme-toggle").innerText = body.classList.contains("dark-mode") ? "☀️" : "🌙";
+    }
+
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0
+      }).format(amount);
+    }
+
+    function calculateSIP() {
+      const monthlyAmount = parseFloat(document.getElementById('monthlyAmount').value) || 0;
+      const investmentPeriod = parseFloat(document.getElementById('investmentPeriod').value) || 0;
+      const expectedReturn = parseFloat(document.getElementById('expectedReturn').value) || 0;
+      const stepUpPercentage = parseFloat(document.getElementById('stepUpPercentage').value) || 0;
+
+      if (monthlyAmount <= 0 || investmentPeriod <= 0 || expectedReturn <= 0) {
+        showEmptyState();
+        return;
+      }
+
+      // Show step-up preview
+      const stepupPreview = document.getElementById('stepupPreview');
+      if (stepUpPercentage > 0) {
+        const year2Amount = monthlyAmount * (1 + stepUpPercentage / 100);
+        stepupPreview.innerHTML = `
+          <strong>Year 2 SIP:</strong> ${formatCurrency(year2Amount)}<br>
+          <small>Your SIP amount will increase by ${stepUpPercentage}% annually</small>
+        `;
+        stepupPreview.style.display = 'block';
+      } else {
+        stepupPreview.style.display = 'none';
+      }
+
+      const monthlyRate = expectedReturn / (12 * 100);
+      const stepUpRate = stepUpPercentage / 100;
+      
+      let totalInvested = 0;
+      let portfolioValue = 0;
+      const yearlyData = [];
+      
+      for (let year = 1; year <= investmentPeriod; year++) {
+        const currentYearMonthlyAmount = year === 1 
+          ? monthlyAmount 
+          : monthlyAmount * Math.pow(1 + stepUpRate, year - 1);
+        
+        let yearlyInvestment = 0;
+        let yearStartValue = portfolioValue;
+        
+        for (let month = 1; month <= 12; month++) {
+          portfolioValue += currentYearMonthlyAmount;
+          yearlyInvestment += currentYearMonthlyAmount;
+          totalInvested += currentYearMonthlyAmount;
+          
+          if (monthlyRate > 0) {
+            portfolioValue *= (1 + monthlyRate);
+          }
+        }
+        
+        const yearEndValue = portfolioValue;
+        const yearlyReturns = yearEndValue - yearStartValue - yearlyInvestment;
+        
+        yearlyData.push({
+          year,
+          invested: totalInvested,
+          value: portfolioValue,
+          returns: portfolioValue - totalInvested,
+          monthlyAmount: currentYearMonthlyAmount
+        });
+      }
+      
+      const finalAmount = portfolioValue;
+      const totalReturns = finalAmount - totalInvested;
+      
+      sipData = {
+        totalInvested,
+        totalReturns,
+        finalAmount,
+        yearlyData
+      };
+
+      updateResults();
+      updateChart();
+      updateBreakdownTable();
+    }
+
+    function updateResults() {
+      const gainPercentage = sipData.totalInvested > 0 
+        ? ((sipData.totalReturns / sipData.totalInvested) * 100) 
+        : 0;
+
+      document.getElementById('totalInvested').textContent = formatCurrency(sipData.totalInvested);
+      document.getElementById('totalReturns').textContent = formatCurrency(sipData.totalReturns);
+      document.getElementById('finalAmount').textContent = formatCurrency(sipData.finalAmount);
+      document.getElementById('gainPercentage').textContent = `${gainPercentage.toFixed(1)}% gain`;
+    }
+
+    function updateChart() {
+      const svg = document.getElementById('chartSvg');
+      const data = sipData.yearlyData;
+      
+      if (!data.length) {
+        svg.innerHTML = '<text x="400" y="200" text-anchor="middle" fill="currentColor" font-size="16">Enter investment details to see chart</text>';
+        return;
+      }
+
+      const maxValue = Math.max(...data.map(d => d.value));
+      const padding = maxValue * 0.1;
+      const chartMax = maxValue + padding;
+      
+      const points = data.map((item, index) => ({
+        ...item,
+        x: 50 + (index / (data.length - 1)) * 700,
+        investedY: 350 - ((item.invested / chartMax) * 300),
+        valueY: 350 - ((item.value / chartMax) * 300)
+      }));
+
+      // Create paths
+      const investedPath = `M ${points[0].x},${points[0].investedY} ` + 
+        points.slice(1).map(p => `L ${p.x},${p.investedY}`).join(' ');
+      
+      const valuePath = `M ${points[0].x},${points[0].valueY} ` + 
+        points.slice(1).map(p => `L ${p.x},${p.valueY}`).join(' ');
+
+      svg.innerHTML = `
+        <defs>
+          <linearGradient id="investedGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#00b4d8" stop-opacity="0.3" />
+            <stop offset="100%" stop-color="#00b4d8" stop-opacity="0.1" />
+          </linearGradient>
+          <linearGradient id="valueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#10b981" stop-opacity="0.3" />
+            <stop offset="100%" stop-color="#10b981" stop-opacity="0.1" />
+          </linearGradient>
+        </defs>
+        
+        <!-- Grid lines -->
+        ${Array.from({ length: 6 }, (_, i) => 
+          `<line x1="50" y1="${50 + i * 60}" x2="750" y2="${50 + i * 60}" stroke="currentColor" stroke-opacity="0.1" stroke-width="1"/>`
+        ).join('')}
+        
+        <!-- Area fills -->
+        <path d="${investedPath} L 750,350 L 50,350 Z" fill="url(#investedGradient)"/>
+        <path d="${valuePath} L 750,350 L 50,350 Z" fill="url(#valueGradient)"/>
+        
+        <!-- Lines -->
+        <path d="${investedPath}" fill="none" stroke="#00b4d8" stroke-width="3"/>
+        <path d="${valuePath}" fill="none" stroke="#10b981" stroke-width="3"/>
+        
+        <!-- Data points -->
+        ${points.map(point => `
+          <circle cx="${point.x}" cy="${point.investedY}" r="4" fill="#00b4d8"/>
+          <circle cx="${point.x}" cy="${point.valueY}" r="4" fill="#10b981"/>
+        `).join('')}
+        
+        <!-- Y-axis labels -->
+        ${Array.from({ length: 6 }, (_, i) => {
+          const value = chartMax - (i * chartMax / 5);
+          return `<text x="40" y="${55 + i * 60}" text-anchor="end" fill="currentColor" font-size="12">${formatCurrency(value)}</text>`;
+        }).join('')}
+        
+        <!-- X-axis labels -->
+        ${points.filter((_, i) => i % Math.ceil(points.length / 8) === 0).map(point => 
+          `<text x="${point.x}" y="375" text-anchor="middle" fill="currentColor" font-size="12">Year ${point.year}</text>`
+        ).join('')}
+      `;
+    }
+
+    function updateBreakdownTable() {
+      const tbody = document.getElementById('breakdownTableBody');
+      const data = sipData.yearlyData;
+      
+      tbody.innerHTML = data.map(yearData => `
+        <tr>
+          <td><strong>Year ${yearData.year}</strong></td>
+          <td>${formatCurrency(yearData.monthlyAmount)}</td>
+          <td>${formatCurrency(yearData.invested)}</td>
+          <td><strong>${formatCurrency(yearData.value)}</strong></td>
+          <td style="color: #10b981;"><strong>+${formatCurrency(yearData.returns)}</strong></td>
+        </tr>
+      `).join('');
+    }
+
+    function showEmptyState() {
+      document.getElementById('totalInvested').textContent = '₹0';
+      document.getElementById('totalReturns').textContent = '₹0';
+      document.getElementById('finalAmount').textContent = '₹0';
+      document.getElementById('gainPercentage').textContent = '0% gain';
+      
+      const svg = document.getElementById('chartSvg');
+      svg.innerHTML = `
+        <text x="400" y="180" text-anchor="middle" fill="currentColor" font-size="48" opacity="0.3">📊</text>
+        <text x="400" y="220" text-anchor="middle" fill="currentColor" font-size="16" opacity="0.6">Enter investment details to see growth chart</text>
+      `;
+      
+      document.getElementById('breakdownTableBody').innerHTML = '';
+    }
+
+    // Initialize calculator on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      calculateSIP();
+    });
+  </script>
+</body>
+</html>
