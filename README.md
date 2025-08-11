@@ -122,7 +122,6 @@ This project was developed as part of my internship at Fydaa. Feel free to explo
 **Developer**: Atul Shinde  
 **Email**: Shindeatul840@gmail.com  
 **LinkedIn**: (https://www.linkedin.com/in/atulshinde3484/) 
-**Organization**: Fydaa - Multistrato Capital Advisors Limited
 
 ---
 
